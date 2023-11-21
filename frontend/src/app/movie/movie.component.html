@@ -1,0 +1,66 @@
+<div class="container mt-4">
+    <h2>Movies</h2>
+
+    <!-- Formulario para crear/editar una película -->
+    <form (ngSubmit)="currentMovie._id ? updateMovie(currentMovie._id, currentMovie) : createMovie(currentMovie)" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" class="form-control" [(ngModel)]="currentMovie.title" name="title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="director">Director:</label>
+            <input type="text" class="form-control" [(ngModel)]="currentMovie.director" name="director" required>
+        </div>
+
+        <div class="form-group">
+            <label for="genre">Genre:</label>
+            <input type="text" class="form-control" [(ngModel)]="currentMovie.genre" name="genre" required>
+        </div>
+
+        <div class="form-group">
+            <label for="releaseDate">Release Date:</label>
+            <input type="date" class="form-control" [(ngModel)]="currentMovie.releaseDate" name="releaseDate" required>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Image:</label>
+            <input type="file" class="form-control" [(ngModel)]="currentMovie.image" (change)="handleImageChange($event)" name="image" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">{{currentMovie._id ? 'Update' : 'Add'}}</button>
+    </form>
+
+    <hr>
+
+    <!-- Lista de películas -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Director</th>
+                <th>Genre</th>
+                <th>Release Date</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let movie of movies">
+                <td>{{ movie.title }}</td>
+                <td>{{ movie.director }}</td>
+                <td>{{ movie.genre }}</td>
+                <td>{{ movie.releaseDate | date }}</td>
+                <td>
+                    <!-- Utiliza un estilo para establecer el ancho máximo de la imagen -->
+                    <img [src]="movie.imageUrl" alt="" srcset="" style="max-width: 100px;">
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary" (click)="editMovie(movie._id)">Edit</button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteMovie(movie._id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
