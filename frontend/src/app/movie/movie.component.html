@@ -1,37 +1,71 @@
 <div class="container mt-4">
     <h2>Movies</h2>
 
-    <!-- Formulario para crear/editar una película -->
-    <form (ngSubmit)="currentMovie._id ? updateMovie(currentMovie._id, currentMovie) : createMovie(currentMovie)" enctype="multipart/form-data">
+    <!-- Formulario para crear una película -->
+    <form (ngSubmit)="createMovie(currentMovie)" enctype="multipart/form-data" #movieForm="ngForm">
         <div class="form-group">
             <label for="title">Title:</label>
-            <input type="text" class="form-control" [(ngModel)]="currentMovie.title" name="title" required>
+            <input type="text" class="form-control" [(ngModel)]="currentMovie.title" name="title" #formName="ngModel" required
+                [ngClass]="{'is-invalid': formName.invalid && (formName.dirty || formName.touched)}">
+            <div class="invalid-feedback" *ngIf="formName.invalid && (formName.dirty || formName.touched)">
+                <div *ngIf="formName.errors?.['required']">Title is required.</div>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="director">Director:</label>
-            <input type="text" class="form-control" [(ngModel)]="currentMovie.director" name="director" required>
+            <input type="text" class="form-control" [(ngModel)]="currentMovie.director" name="director" #formDirector="ngModel" required
+                [ngClass]="{'is-invalid': formDirector.invalid && (formDirector.dirty || formDirector.touched)}">
+            <div class="invalid-feedback" *ngIf="formDirector.invalid && (formDirector.dirty || formDirector.touched)">
+                <div *ngIf="formDirector.errors?.['required']">Director is required.</div>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="genre">Genre:</label>
-            <input type="text" class="form-control" [(ngModel)]="currentMovie.genre" name="genre" required>
+            <input type="text" class="form-control" [(ngModel)]="currentMovie.genre" name="genre" #formGenre="ngModel" required
+                [ngClass]="{'is-invalid': formGenre.invalid && (formGenre.dirty || formGenre.touched)}">
+            <div class="invalid-feedback" *ngIf="formGenre.invalid && (formGenre.dirty || formGenre.touched)">
+                <div *ngIf="formGenre.errors?.['required']">Genre is required.</div>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="releaseDate">Release Date:</label>
-            <input type="date" class="form-control" [(ngModel)]="currentMovie.releaseDate" name="releaseDate" required>
+            <input type="date" class="form-control" [(ngModel)]="currentMovie.releaseDate" name="releaseDate" #formReleaseDate="ngModel" required
+                [ngClass]="{'is-invalid': formReleaseDate.invalid && (formReleaseDate.dirty || formReleaseDate.touched)}">
+            <div class="invalid-feedback" *ngIf="formReleaseDate.invalid && (formReleaseDate.dirty || formReleaseDate.touched)">
+                <div *ngIf="formReleaseDate.errors?.['required']">Release Date is required.</div>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="image">Image:</label>
-            <input type="file" class="form-control" [(ngModel)]="currentMovie.image" (change)="handleImageChange($event)" name="image" required>
+            <input type="file" class="form-control" [(ngModel)]="currentMovie.image" (change)="handleImageChange($event)" name="image" #formImage="ngModel" required
+                [ngClass]="{'is-invalid': formImage.invalid && (formImage.dirty || formImage.touched)}">
+            <div class="invalid-feedback" *ngIf="formImage.invalid && (formImage.dirty || formImage.touched)">
+                <div *ngIf="formImage.errors?.['required']">Image is required.</div>
+            </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">{{currentMovie._id ? 'Update' : 'Add'}}</button>
+        <div *ngIf="isOperationSuccess" class="alert alert-success" role="alert">
+            Operación exitosa.
+        </div>
+        <div *ngIf="isOperationError" class="alert alert-danger" role="alert">
+            Error al realizar la operación.
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="!movieForm.valid || isFormSubmitted">
+            Add
+        </button>
     </form>
 
     <hr>
+
+    <div class="form-group mt-3">
+        <label for="search">Buscar:</label>
+        <input type="text" class="form-control" [(ngModel)]="searchTerm" name="search" placeholder="Buscar películas..." />
+    </div>
 
     <!-- Lista de películas -->
     <table class="table">
@@ -46,7 +80,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let movie of movies">
+            <tr *ngFor="let movie of filteredMovies">
                 <td>{{ movie.title }}</td>
                 <td>{{ movie.director }}</td>
                 <td>{{ movie.genre }}</td>
@@ -56,11 +90,9 @@
                     <img [src]="movie.imageUrl" alt="" srcset="" style="max-width: 100px;">
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-primary" (click)="editMovie(movie._id)">Edit</button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteMovie(movie._id)">Delete</button>
+                    <button class="btn btn-sm btn-danger" (click)="confirmDeleteMovie(movie._id)">Delete</button>
                 </td>
             </tr>
         </tbody>
     </table>
-
 </div>
